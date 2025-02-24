@@ -1,0 +1,31 @@
+:root {
+  --color-primary: #1d3557;
+  --color-secondary: #ecbe2e;
+  --color-accent: #e63946;
+  --color-background: #0f1235;
+  --color-text: #f1faee;
+
+  --color-light-background: #f1faee;
+  --color-light-text: #1d3557;
+  --color-light-primary: #e63946;
+  --color-light-secondary: #90c7e8;
+  --color-light-accent: #a8dadc;
+
+  --font-primary: 'Inter', system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
+  --font-secondary: 'Courier New', Courier, monospace;
+
+  --spacing-small: 8px;
+  --spacing-medium: 16px;
+  --spacing-large: 32px;
+
+  --border-radius: 8px;
+
+  @property --dynamic-scale {
+    syntax: '<number>';
+    initial-value: 1;
+    inherits: true;
+  }
+
+  --dynamic-scale: 1;
+}

@@ -1,0 +1,99 @@
+@import './variables.css';
+
+.light-theme {
+  --color-background: var(--color-light-background);
+  --color-text: var(--color-light-text);
+  --color-primary: var(--color-light-primary);
+  --color-secondary: var(--color-light-secondary);
+  --color-accent: var(--color-light-accent);
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding: var(--spacing-medium);
+  display: flex;
+  place-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+#theme-switch {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: var(--spacing-small);
+  cursor: pointer;
+  background-color: var(--color-secondary);
+}
+
+.container {
+  background-color: var(--color-secondary);
+  padding: var(--spacing-large);
+  border-radius: var(--border-radius);
+  color: white; /* Inherits text color unless overridden */
+  width: 50vh;
+  height: 50vh;
+  margin: 0 auto;
+
+  & h1 {
+    font-family: var(--font-secondary);
+    font-size: calc(1.5 * var(--dynamic-scale));
+    margin-bottom: var(--spacing-medium);
+    color: var(--color-primary);
+  }
+
+  /* Scoped styles */
+  & .card {
+    background-color: var(--color-accent);
+    color: var(--color-background);
+    transform: scale(var(--dynamic-scale));
+
+    /* Change scale dynamically */
+    &:hover {
+      --dynamic-scale: 1.1;
+      /* transform: scale(var(--dynamic-scale)); */
+    }
+  }
+}
+
+.card {
+  background-color: var(--color-secondary);
+  padding: var(--spacing-medium);
+  border-radius: var(--border-radius);
+  transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --spacing-small: 6px;
+    --spacing-medium: 12px;
+    --spacing-large: 24px;
+    --border-radius: 6px;
+
+    --dynamic-scale: 0.9;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --spacing-small: 4px;
+    --spacing-medium: 8px;
+    --spacing-large: 16px;
+    --border-radius: 4px;
+
+    --dynamic-scale: 0.8;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --spacing-small: 2px;
+    --spacing-medium: 6px;
+    --spacing-large: 12px;
+    --border-radius: 2px;
+
+    --dynamic-scale: 0.7;
+  }
+}
