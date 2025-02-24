@@ -14,9 +14,10 @@ body {
   color: var(--color-text);
   padding: var(--spacing-medium);
   display: flex;
-  place-items: center;
-  display: flex;
   justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
 #theme-switch {
@@ -32,37 +33,59 @@ body {
   background-color: var(--color-secondary);
   padding: var(--spacing-large);
   border-radius: var(--border-radius);
-  color: white; /* Inherits text color unless overridden */
-  width: 50vh;
-  height: 50vh;
-  margin: 0 auto;
+  color: lightslategrey; /* Inherits text color unless overridden */
+  width: 50vw;
 
   & h1 {
     font-family: var(--font-secondary);
-    font-size: calc(1.5 * var(--dynamic-scale));
+    font-size: calc(var(--spacing-large) * var(--dynamic-scale));
     margin-bottom: var(--spacing-medium);
-    color: var(--color-primary);
+    text-align: center;
+    color: var(--color-primary); /* Overrides the parent color */
+  }
+
+  & h2 {
+    font-size: calc(var(--spacing-medium) * var(--dynamic-scale));
+
+    text-align: center;
   }
 
   /* Scoped styles */
   & .card {
-    background-color: var(--color-accent);
-    color: var(--color-background);
+    color: var(--color-text);
     transform: scale(var(--dynamic-scale));
+    margin-bottom: calc(var(--spacing-large) * 2);
 
     /* Change scale dynamically */
     &:hover {
-      --dynamic-scale: 1.1;
-      /* transform: scale(var(--dynamic-scale)); */
+      --dynamic-scale: 1.05;
     }
   }
 }
 
+@property --card-background-color {
+  syntax: '<color>';
+  initial-value: #0f1235; /* Default value */
+  inherits: false; /* Prevent inheritance */
+}
+
 .card {
-  background-color: var(--color-secondary);
+  --card-background-color: var(
+    --color-accent
+  ); /* Override the @property value */
+  background-color: var(--card-background-color);
+
   padding: var(--spacing-medium);
   border-radius: var(--border-radius);
   transition: transform 0.3s ease-in-out;
+}
+
+.card-text {
+  padding: var(--spacing-medium);
+  background-color: var(
+    --card-background-color
+  ); /* Doesn't inherit the custom property from the parent */
+  border-radius: var(--border-radius);
 }
 
 @media (max-width: 1024px) {

@@ -12,8 +12,27 @@
   </head>
   <body>
     <button id="theme-switch">Theme switch</button>
-    <main class=".container">
+    <main class="container">
       <h1>Web Components Demo</h1>
+      <h2>h2 Doesn't override parent's color</h2>
+      <div class="card">
+        <h3>Card Title</h3>
+        <div class="card-text">
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Quisquam voluptates, quidem, quod, quos voluptate quae
+            quibusdam exercitationem
+          </p>
+        </div>
+      </div>
+      <div class="parent">
+        <p>Parent element</p>
+        <div class="child">
+          <p>
+            Child element with inheritance disabled for --box-color.
+          </p>
+        </div>
+      </div>
       <custom-select label="Choose an option">
         <custom-option value="value1">Option 1</custom-option>
         <custom-option value="value2">Option 2</custom-option>
