@@ -1,3 +1,42 @@
+const template = document.createElement('template');
+template.innerHTML = `
+  <style>
+    :host {
+      display: block; /* Important for layout */
+      cursor: pointer;
+      outline: none;  /* Remove default outline */
+    }
+
+    :host([selected]) {
+      background-color: #f0f0f0;
+    }
+
+    :host(:focus) {
+      outline: red 2px solid;
+    }
+
+    :host(:hover) {
+      background-color: #f9f9f9;
+    }
+
+    div {
+      display: block;
+      padding: 8px 12px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Ensures text color applies inside the slot */
+    ::slotted(*) {
+      color: inherit; /* Change text color */
+    }
+  </style>
+  <div>
+    <slot>
+    </slot>
+  </div>
+`;
+
 export class CustomOption extends HTMLElement {
   private _value: string = '';
   private _label: string = '';
@@ -10,10 +49,21 @@ export class CustomOption extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.shadowRoot?.appendChild(template.content.cloneNode(true));
   }
 
   connectedCallback() {
-    this._render();
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'option');
+    }
+
+    if (!this.hasAttribute('tabindex')) {
+      this.setAttribute('tabindex', '0');
+    }
+
+    this._upgradeProperty('value');
+    this._upgradeProperty('label');
+    this._upgradeProperty('selected');
     this._processSlotContent();
   }
 
@@ -32,8 +82,8 @@ export class CustomOption extends HTMLElement {
       this._label = newValue ?? '';
     } else if (name === 'selected') {
       this._selected = newValue !== null;
+      this.setAttribute('aria-selected', String(this._selected));
     }
-    this._render();
   }
 
   get value(): string {
@@ -53,7 +103,7 @@ export class CustomOption extends HTMLElement {
   }
 
   get selected(): boolean {
-    return this._selected;
+    return this.hasAttribute('selected');
   }
 
   set selected(selected: boolean) {
@@ -64,17 +114,28 @@ export class CustomOption extends HTMLElement {
     }
   }
 
-  focus() {
-    this.shadowRoot?.querySelector('div')?.focus();
+  // When propery is set on element before its definition has been loaded
+  // Reference: https://web.dev/articles/custom-elements-best-practices#make_properties_lazy
+  private _upgradeProperty(prop: string) {
+    const property = prop as keyof this;
+    if (this.hasOwnProperty(property)) {
+      let value = this[property];
+      delete this[property];
+      this[property] = value;
+    }
   }
 
   private _processSlotContent() {
     const slot = this.shadowRoot?.querySelector('slot');
-    if (!slot) return;
+
+    if (!slot) {
+      return;
+    }
 
     // Run after slot assigns light DOM content
     setTimeout(() => {
       const assignedNodes = slot.assignedNodes();
+
       assignedNodes.forEach((node) => {
         if (
           node.nodeType === Node.TEXT_NODE &&
@@ -90,39 +151,6 @@ export class CustomOption extends HTMLElement {
         }
       });
     });
-  }
-  private _render() {
-    if (!this.shadowRoot) {
-      return;
-    }
-
-    this.shadowRoot.innerHTML = `
-        <style>
-            div {
-                display: block;
-                padding: 8px 12px;
-                cursor: pointer;
-                outline: none;
-            }
-
-            div:focus {
-                outline: 2px solid #007bff;
-            }
-
-            :host([selected]) div {
-                background-color: #f0f0f0;
-            }
-
-            /* Ensures text color applies inside the slot */
-            ::slotted(*) {
-                color: red; /* Change text color */
-            }
-        </style>
-        <div tabindex="0">
-            <slot>
-            rede</slot>
-        </div>
-    `;
   }
 }
 

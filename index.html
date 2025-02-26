@@ -33,11 +33,24 @@
           </p>
         </div>
       </div>
-      <custom-select label="Choose an option">
-        <custom-option value="value1">Option 1</custom-option>
-        <custom-option value="value2">Option 2</custom-option>
-        <custom-option value="value3">Option 3</custom-option>
-      </custom-select>
+      <div class="select-container">
+        <custom-select label="Choose an option">
+          <custom-option value="value1"
+            >Custom Option 1</custom-option
+          >
+          <custom-option value="value2"
+            >Custom Option 2</custom-option
+          >
+          <custom-option value="value3"
+            >Custom Option 3</custom-option
+          >
+        </custom-select>
+        <select name="select" id="select">
+          <option value="value1">Select Option 1</option>
+          <option value="value2">Select Option 2</option>
+          <option value="value3">Select Option 3</option>
+        </select>
+      </div>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -88,6 +88,13 @@ body {
   border-radius: var(--border-radius);
 }
 
+.select-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-large);
+  gap: var(--spacing-medium);
+}
+
 @media (max-width: 1024px) {
   :root {
     --spacing-small: 6px;
