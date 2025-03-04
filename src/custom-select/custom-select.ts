@@ -29,7 +29,7 @@ customSelectTemplate.innerHTML = `
       width: 100%;
       text-align: left;
     }
-    .select-button span { color: red; }
+    .select-button span { color: inherit; }
     .select-button:focus { outline: 2px solid #007bff; }
     .select-dropdown {
       position: absolute;
@@ -42,6 +42,8 @@ customSelectTemplate.innerHTML = `
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       min-width: 200px;
       display: none;
+      overflow: auto;
+      max-height: 200px;
     }
     .select-dropdown[aria-hidden="true"] {
       display: none;
@@ -219,10 +221,8 @@ class CustomSelect extends HTMLElement {
 
     switch (eventKey) {
       case EventKeys.ARROW_DOWN:
-        console.log('ARROW_DOWN');
         event.preventDefault();
         let nextIndex = focusedIndex + 1;
-        console.log({ nextIndex });
         if (nextIndex >= options.length) {
           // Loop back to the first option
           nextIndex = 0;

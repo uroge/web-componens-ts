@@ -5,6 +5,9 @@ template.innerHTML = `
       display: block; /* Important for layout */
       cursor: pointer;
       outline: none;  /* Remove default outline */
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     :host([selected]) {
@@ -12,7 +15,8 @@ template.innerHTML = `
     }
 
     :host(:focus) {
-      outline: red 2px solid;
+      outline-offset: -2px;
+      outline: 2px solid #007bff;
     }
 
     :host(:hover) {
