@@ -95,6 +95,18 @@ body {
   gap: var(--spacing-medium);
 }
 
+/* Styling web components */
+custom-select::part(select) {
+  background-color: var(--color-accent);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+}
+
+custom-option::part(option) {
+  background-color: var(--color-accent);
+  color: var(--color-text);
+}
+
 @media (max-width: 1024px) {
   :root {
     --spacing-small: 6px;

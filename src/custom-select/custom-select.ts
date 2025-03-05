@@ -54,7 +54,7 @@ customSelectTemplate.innerHTML = `
   </style>
   
   <div class="select-container">
-    <button class="select-button" aria-haspopup="true" aria-expanded="false">
+    <button class="select-button" part="select" aria-haspopup="true" aria-expanded="false">
     <span>
       Select an option
     </span>
@@ -90,6 +90,16 @@ class CustomSelect extends HTMLElement {
     if (!this.hasAttribute('tabindex')) {
       this.setAttribute('tabindex', '0');
     }
+
+    const button = this.shadowRoot?.querySelector('.select-button');
+    if (button) {
+      button.setAttribute('tabindex', '-1'); // Prevent direct focus
+    }
+
+    this.addEventListener('focus', () => {
+      // @ts-ignore
+      button?.focus();
+    });
 
     this.addEventListener('click', this._handleClick.bind(this));
     this.addEventListener('keydown', this._handleKeyDown.bind(this));
@@ -168,31 +178,22 @@ class CustomSelect extends HTMLElement {
   }
 
   private _handleClick(event: MouseEvent) {
-    const path = event.composedPath();
-    const button = path.find((el) => {
-      return (
-        el instanceof HTMLElement &&
-        el.classList.contains('select-button')
-      );
-    }) as HTMLElement | undefined;
+    // If dropdown is open and clicking outside, close it
+    if (this._isOpen) {
+      const path = event.composedPath();
+      const optionElement = path.find(
+        (el) => el instanceof CustomOption
+      ) as CustomOption | undefined;
 
-    if (button) {
-      this._toggleDropDown();
-      return;
-    }
-
-    const optionElement = path.find(
-      (el) => el instanceof CustomOption
-    ) as CustomOption | undefined;
-
-    if (optionElement) {
-      const newValue = optionElement.value;
-
-      if (newValue !== this._value) {
+      if (optionElement) {
         this._selectOption(optionElement);
         this._closeDropdown();
         this._dispatchChangeEvent();
+      } else {
+        this._closeDropdown();
       }
+    } else {
+      this._toggleDropDown();
     }
   }
 

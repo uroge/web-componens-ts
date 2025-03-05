@@ -35,7 +35,7 @@ template.innerHTML = `
       color: inherit; /* Change text color */
     }
   </style>
-  <div>
+  <div part="option">
     <slot>
     </slot>
   </div>
