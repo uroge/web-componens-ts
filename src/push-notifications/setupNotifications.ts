@@ -1,0 +1,99 @@
+import { environment } from '../environment';
+import { urlBase64ToUint8Array } from '../utils/urlBase64ToUint8Array';
+
+export const setupNotifications = () => {
+  if (!('serviceWorker' in navigator)) {
+    console.error('Service workers are not supported.');
+    return;
+  }
+
+  if (!('PushManager' in window)) {
+    console.error('Push notifications are not supported.');
+    return;
+  }
+
+  askPermission()
+    .then(() => registerServiceWorker())
+    .then((registration) => {
+      if (registration) {
+        const subscribeOptions: PushSubscriptionOptionsInit = {
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(
+            environment.vapidPublicKey
+          ),
+        };
+
+        return registration.pushManager.subscribe(subscribeOptions);
+      }
+    })
+    .then(async (pushSubscription) => {
+      if (pushSubscription) {
+        console.log(
+          'Received PushSubscription:',
+          JSON.stringify(pushSubscription)
+        );
+
+        await sendSubscriptionToBackend(pushSubscription);
+      }
+    })
+    .catch((err) => {
+      console.error('Error setting up notifications:', err);
+    });
+};
+
+function registerServiceWorker() {
+  return navigator.serviceWorker
+    .register('/service-worker.js')
+    .then((registration) => {
+      console.log('Service worker successfully registered.');
+      // Passing VAPID public key to the service worker
+      registration.active?.postMessage({
+        vapidPublicKey: environment.vapidPublicKey,
+      });
+      return registration;
+    })
+    .catch((err) => {
+      console.error('Unable to register service worker.', err);
+      throw new Error('Service Worker registration failed');
+    });
+}
+
+function askPermission(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    Notification.requestPermission()
+      .then((permissionResult) => {
+        if (permissionResult !== 'granted') {
+          reject(new Error("We weren't granted permission."));
+        }
+        resolve();
+      })
+      .catch(reject);
+  });
+}
+
+async function sendSubscriptionToBackend(
+  subscription: PushSubscription
+) {
+  try {
+    const response = await fetch('/api/save-subscription/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(subscription),
+    });
+
+    if (!response.ok) {
+      throw new Error('Bad status code from server.');
+    }
+
+    const responseData = await response.json();
+
+    if (!(responseData.data && responseData.data.success)) {
+      throw new Error('Bad response from server.');
+    }
+  } catch (err) {
+    console.error('Error while sending subscription:', err);
+    throw err;
+  }
+}
