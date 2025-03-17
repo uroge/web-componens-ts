@@ -1,10 +1,24 @@
 import './env.ts';
+import webPush from 'npm:web-push';
 
-export function add(a: number, b: number): number {
-  return a + b;
-}
+const PORT = 4001;
+
+webPush.setVapidDetails(
+  Deno.env.get('VAPID_SUBJECT'),
+  Deno.env.get('VAPID_PUBLIC_KEY'),
+  Deno.env.get('VAPID_PRIVATE_KEY')
+);
 
 // Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
 if (import.meta.main) {
-  console.log({ env: Deno.env.get('VAPID_PUBLIC_KEY') });
+  Deno.serve({ port: PORT }, () => {
+    const body = JSON.stringify({ message: 'CONNECTED' });
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+    });
+  });
 }
