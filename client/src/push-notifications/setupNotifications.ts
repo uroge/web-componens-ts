@@ -28,11 +28,6 @@ export const setupNotifications = () => {
     })
     .then(async (pushSubscription) => {
       if (pushSubscription) {
-        console.log(
-          'Received PushSubscription:',
-          JSON.stringify(pushSubscription)
-        );
-
         await sendSubscriptionToBackend(pushSubscription);
       }
     })
@@ -47,6 +42,7 @@ function registerServiceWorker() {
     .then((registration) => {
       console.log('Service worker successfully registered.');
       // Passing VAPID public key to the service worker
+      console.log({ registration });
       registration.active?.postMessage({
         vapidPublicKey: environment.vapidPublicKey,
       });
@@ -65,6 +61,7 @@ function askPermission(): Promise<void> {
         if (permissionResult !== 'granted') {
           reject(new Error("We weren't granted permission."));
         }
+        console.log('PERMISSION GRANTED');
         resolve();
       })
       .catch(reject);
@@ -85,8 +82,6 @@ async function sendSubscriptionToBackend(
         body: JSON.stringify(subscription),
       }
     );
-
-    console.log({ response });
 
     if (!response.ok) {
       throw new Error('Bad status code from server.');

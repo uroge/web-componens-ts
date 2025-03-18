@@ -29,11 +29,31 @@ router
   )
   .post('/api/send-notification/', (ctx) =>
     handleSendNotification(ctx, async (payload) => {
+      const failedSubscriptions: PushSubscription[] = [];
       await Promise.all(
-        subscriptions.map((subscription) =>
-          webPush.sendNotification(subscription, payload)
-        )
+        subscriptions.map(async (subscription) => {
+          try {
+            await webPush.sendNotification(subscription, payload);
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              (error as any).statusCode === 410
+            ) {
+              console.log(
+                `Subscription ${subscription.endpoint} is invalid (410 Gone). Removing it.`
+              );
+              failedSubscriptions.push(subscription);
+            } else {
+              console.error('Error sending notification:', error);
+            }
+          }
+        })
       );
+
+      failedSubscriptions.forEach((subscription) => {
+        const index = subscriptions.indexOf(subscription);
+        subscriptions.splice(index, 1);
+      });
     })
   );
 
