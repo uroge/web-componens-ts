@@ -1,7 +1,14 @@
 import './env.ts';
 import webPush from 'npm:web-push';
+import { Application, Router } from 'https://deno.land/x/oak/mod.ts';
+import { oakCors } from 'https://deno.land/x/cors/mod.ts';
+import { handleNotificationSubscription } from './handlers/handleNotificationSubscription.ts';
+import { handleSendNotification } from './handlers/handleSendNotification.ts';
 
 const PORT = 4001;
+const ALLOW_ORIGIN = 'http://localhost:5173';
+
+const subscriptions: PushSubscription[] = [];
 
 webPush.setVapidDetails(
   Deno.env.get('VAPID_SUBJECT'),
@@ -9,16 +16,30 @@ webPush.setVapidDetails(
   Deno.env.get('VAPID_PRIVATE_KEY')
 );
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
-if (import.meta.main) {
-  Deno.serve({ port: PORT }, () => {
-    const body = JSON.stringify({ message: 'CONNECTED' });
+const router = new Router();
 
-    return new Response(body, {
-      status: 200,
-      headers: {
-        'content-type': 'application/json; charset=utf-8',
-      },
-    });
-  });
-}
+router
+  .get('/', (context) => {
+    context.response.body = { message: 'Hello from the server!' };
+  })
+  .post('/api/save-subscription/', (ctx) =>
+    handleNotificationSubscription(ctx, (subscription) => {
+      subscriptions.push(subscription);
+    })
+  )
+  .post('/api/send-notification/', (ctx) =>
+    handleSendNotification(ctx, async (payload) => {
+      await Promise.all(
+        subscriptions.map((subscription) =>
+          webPush.sendNotification(subscription, payload)
+        )
+      );
+    })
+  );
+
+const app = new Application();
+app.use(oakCors({ origin: ALLOW_ORIGIN }));
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+await app.listen({ port: PORT });
