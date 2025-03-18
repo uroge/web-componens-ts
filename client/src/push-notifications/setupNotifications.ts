@@ -75,13 +75,18 @@ async function sendSubscriptionToBackend(
   subscription: PushSubscription
 ) {
   try {
-    const response = await fetch('/api/save-subscription/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(subscription),
-    });
+    const response = await fetch(
+      `${environment.publicUrl}/api/save-subscription/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(subscription),
+      }
+    );
+
+    console.log({ response });
 
     if (!response.ok) {
       throw new Error('Bad status code from server.');
