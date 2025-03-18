@@ -4,5 +4,9 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.11"
+  },
+  "exclude": ["client"],
+  "compilerOptions": {
+    "lib": ["deno.ns", "dom"]
   }
 }
