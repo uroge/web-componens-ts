@@ -1,5 +1,6 @@
 import { environment } from '../environment';
 import { urlBase64ToUint8Array } from '../utils/urlBase64ToUint8Array';
+
 export const setupNotifications = () => {
   if (!('serviceWorker' in navigator)) {
     console.error('Service workers are not supported.');
