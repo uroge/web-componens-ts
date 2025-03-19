@@ -30,7 +30,7 @@ notificationsButton.addEventListener('click', async () => {
 
   try {
     const json = await result.json();
-    console.log(json);
+    console.log({ result: json });
   } catch (error) {
     console.error(error);
   }

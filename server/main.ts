@@ -8,7 +8,7 @@ import { handleSendNotification } from './handlers/handleSendNotification.ts';
 const PORT = 4001;
 const ALLOW_ORIGIN = 'http://localhost:5173';
 
-const subscriptions: PushSubscription[] = [];
+const subscriptions: Record<string, PushSubscription> = {};
 
 webPush.setVapidDetails(
   Deno.env.get('VAPID_SUBJECT'),
@@ -24,15 +24,24 @@ router
   })
   .post('/api/save-subscription/', (ctx) =>
     handleNotificationSubscription(ctx, (subscription) => {
-      subscriptions.push(subscription);
+      if (subscription.endpoint in subscriptions) {
+        console.log('Subscription already exists');
+      } else {
+        subscriptions[subscription.endpoint] = subscription;
+        console.log(
+          'Subscription saved',
+          Object.values(subscriptions).length
+        );
+      }
     })
   )
   .post('/api/send-notification/', (ctx) =>
     handleSendNotification(ctx, async (payload) => {
       const failedSubscriptions: PushSubscription[] = [];
       await Promise.all(
-        subscriptions.map(async (subscription) => {
+        Object.values(subscriptions).map(async (subscription) => {
           try {
+            console.log('PUSH');
             await webPush.sendNotification(subscription, payload);
           } catch (error) {
             if (
