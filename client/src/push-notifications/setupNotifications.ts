@@ -1,6 +1,5 @@
 import { environment } from '../environment';
 import { urlBase64ToUint8Array } from '../utils/urlBase64ToUint8Array';
-
 export const setupNotifications = () => {
   if (!('serviceWorker' in navigator)) {
     console.error('Service workers are not supported.');
@@ -16,15 +15,37 @@ export const setupNotifications = () => {
     .then(() => registerServiceWorker())
     .then((registration) => {
       if (registration) {
-        const subscribeOptions: PushSubscriptionOptionsInit = {
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(
-            environment.vapidPublicKey
-          ),
-        };
-
-        return registration.pushManager.subscribe(subscribeOptions);
+        return new Promise((resolve) => {
+          const checkActiveState = () => {
+            if (registration.active) {
+              resolve(registration);
+            } else {
+              setTimeout(checkActiveState, 100);
+            }
+          };
+          checkActiveState();
+        });
       }
+    })
+    .then((registration) => {
+      registration.active?.postMessage({
+        vapidPublicKey: environment.vapidPublicKey,
+      });
+
+      return registration;
+    })
+    .then((registration) => {
+      // Passing VAPID public key to the service worker
+      const subscribeOptions: PushSubscriptionOptionsInit = {
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          environment.vapidPublicKey
+        ),
+      };
+
+      console.log({ subscribeOptions });
+
+      return registration.pushManager.subscribe(subscribeOptions);
     })
     .then(async (pushSubscription) => {
       if (pushSubscription) {
@@ -41,11 +62,6 @@ function registerServiceWorker() {
     .register('/service-worker.js')
     .then((registration) => {
       console.log('Service worker successfully registered.');
-      // Passing VAPID public key to the service worker
-      console.log({ registration });
-      registration.active?.postMessage({
-        vapidPublicKey: environment.vapidPublicKey,
-      });
       return registration;
     })
     .catch((err) => {

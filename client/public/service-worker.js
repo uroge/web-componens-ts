@@ -16,15 +16,22 @@ self.addEventListener('push', function handlePush(event) {
   const tag = 'simple-push-demo-notification-tag';
 
   event.waitUntil(
-    self.registration.showNotification(title, {
-      body: body,
-      icon: icon,
-      tag: tag,
-      requireInteraction: true,
-    })
+    self.registration
+      .showNotification(title, {
+        body: body,
+        icon: icon,
+        tag: tag,
+        requireInteraction: true,
+      })
+      .then(() => {
+        console.log('Notification displayed');
+      })
+      .catch((err) => {
+        console.error('Failed to show notification:', err);
+      })
   );
 
-  event.waitUntil(resubscribeToPush());
+  // event.waitUntil(resubscribeToPush());
 });
 
 function resubscribeToPush() {
@@ -32,7 +39,6 @@ function resubscribeToPush() {
     .getSubscription()
     .then((subscription) => {
       if (!subscription) {
-        console.log('No existing subscription, resubscribing...');
         return self.registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(
