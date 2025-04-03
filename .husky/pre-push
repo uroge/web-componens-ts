@@ -1,0 +1,3 @@
+cd client && npx pnpm lint
+cd client &&  npx pnpm build
+echo "Linting completed. Proceeding with push..."

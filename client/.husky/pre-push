@@ -1,3 +1,0 @@
-npx pnpm lint
-npx pnpm build
-echo "Linting completed. Proceeding with push..."

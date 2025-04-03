@@ -1,2 +1,2 @@
-npx pnpm lint
+cd client && npx pnpm lint
 echo "Linting completed. Proceeding with commit..."
