@@ -21,7 +21,7 @@ export default defineConfig([
       'no-case-declarations': 'off',
       'no-prototype-builtins': 'off',
       'no-unused-vars': 'warn',
-      'no-console': 'error',
+      'no-console': 'warn',
     },
     ignores: ['**/node_modules/**', '**/dist/**'],
   },

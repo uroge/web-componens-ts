@@ -1,0 +1,2 @@
+npx pnpm lint
+echo "Linting completed. Proceeding with push..."
