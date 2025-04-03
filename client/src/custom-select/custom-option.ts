@@ -2,9 +2,9 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
     :host {
-      display: block; /* Important for layout */
+      display: block;
       cursor: pointer;
-      outline: none;  /* Remove default outline */
+      outline: none;
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -32,7 +32,7 @@ template.innerHTML = `
 
     /* Ensures text color applies inside the slot */
     ::slotted(*) {
-      color: inherit; /* Change text color */
+      color: inherit;
     }
   </style>
   <div part="option">
@@ -123,7 +123,7 @@ export class CustomOption extends HTMLElement {
   private _upgradeProperty(prop: string) {
     const property = prop as keyof this;
     if (this.hasOwnProperty(property)) {
-      let value = this[property];
+      const value = this[property];
       delete this[property];
       this[property] = value;
     }

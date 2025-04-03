@@ -3,18 +3,21 @@ import { urlBase64ToUint8Array } from '../utils/urlBase64ToUint8Array';
 
 export const setupNotifications = () => {
   if (!('serviceWorker' in navigator)) {
+    // eslint-disable-next-line no-console
     console.error('Service workers are not supported.');
     return;
   }
 
   if (!('PushManager' in window)) {
+    // eslint-disable-next-line no-console
     console.error('Push notifications are not supported.');
     return;
   }
 
   askPermission()
     .then(() => registerServiceWorker())
-    .then((registration) => {
+    .then((value: unknown) => {
+      const registration = value as ServiceWorkerRegistration;
       if (registration) {
         return new Promise((resolve) => {
           const checkActiveState = () => {
@@ -28,7 +31,8 @@ export const setupNotifications = () => {
         });
       }
     })
-    .then((registration) => {
+    .then((value: unknown) => {
+      const registration = value as ServiceWorkerRegistration;
       registration.active?.postMessage({
         vapidPublicKey: environment.vapidPublicKey,
       });
@@ -44,8 +48,6 @@ export const setupNotifications = () => {
         ),
       };
 
-      console.log({ subscribeOptions });
-
       return registration.pushManager.subscribe(subscribeOptions);
     })
     .then(async (pushSubscription) => {
@@ -54,21 +56,20 @@ export const setupNotifications = () => {
       }
     })
     .catch((err) => {
+      // eslint-disable-next-line no-console
       console.error('Error setting up notifications:', err);
     });
 };
 
-function registerServiceWorker() {
-  return navigator.serviceWorker
-    .register('/service-worker.js')
-    .then((registration) => {
-      console.log('Service worker successfully registered.');
-      return registration;
-    })
-    .catch((err) => {
-      console.error('Unable to register service worker.', err);
-      throw new Error('Service Worker registration failed');
-    });
+async function registerServiceWorker(): Promise<ServiceWorkerRegistration> {
+  try {
+    const registration = await navigator.serviceWorker.register(
+      '/service-worker.js'
+    );
+    return registration;
+  } catch {
+    throw new Error('Service Worker registration failed');
+  }
 }
 
 function askPermission(): Promise<void> {
@@ -78,7 +79,6 @@ function askPermission(): Promise<void> {
         if (permissionResult !== 'granted') {
           reject(new Error("We weren't granted permission."));
         }
-        console.log('PERMISSION GRANTED');
         resolve();
       })
       .catch(reject);
@@ -110,6 +110,7 @@ async function sendSubscriptionToBackend(
       throw new Error('Bad response from server.');
     }
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('Error while sending subscription:', err);
     throw err;
   }

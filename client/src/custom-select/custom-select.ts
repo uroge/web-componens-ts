@@ -97,6 +97,7 @@ class CustomSelect extends HTMLElement {
     }
 
     this.addEventListener('focus', () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       button?.focus();
     });
@@ -254,6 +255,7 @@ class CustomSelect extends HTMLElement {
         break;
       case EventKeys.ESCAPE:
         this._closeDropdown();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.shadowRoot?.querySelector('.select-button')?.focus();
         break;
