@@ -34,6 +34,7 @@ export const setupNotifications = () => {
     .then((value: unknown) => {
       const registration = value as ServiceWorkerRegistration;
       registration.active?.postMessage({
+        // Generated using https://web-push-codelab.glitch.me/
         vapidPublicKey: environment.vapidPublicKey,
       });
 

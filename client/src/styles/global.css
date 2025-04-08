@@ -70,9 +70,8 @@ body {
 }
 
 .card {
-  --card-background-color: var(
-    --color-accent
-  ); /* Override the @property value */
+  /* Override the @property value */
+  --card-background-color: red;
   background-color: var(--card-background-color);
 
   padding: var(--spacing-medium);
