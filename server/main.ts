@@ -60,8 +60,8 @@ router
       );
 
       failedSubscriptions.forEach((subscription) => {
-        const index = subscriptions.indexOf(subscription);
-        subscriptions.splice(index, 1);
+        delete subscriptions[subscription.endpoint];
+        console.log(`Subscription ${subscription.endpoint} removed.`);
       });
     })
   );
